@@ -33,9 +33,9 @@ public class UserResource {
 
 	// For deleting a Hexagon by name
 	@DeleteMapping("/delete/{name}")
-	public Map<String, Boolean> deleteHexagon(@PathVariable String name) {
-		Boolean ans = HexagonDao.removeHexagon(name);
-		Map<String, Boolean> mp = new LinkedHashMap<>();
+	public HashMap<String, Boolean> deleteHexagon(@PathVariable String name) {
+		Boolean ans = removeHexagon(name);
+		HashMap<String, Boolean> mp = new HashMap<>();
 		mp.put("status", ans);
 		return mp;
 
