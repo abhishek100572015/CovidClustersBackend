@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.rest.webServices.restfulwebServices.Dao.HexagonDao;
+import com.example.rest.webServices.restfulwebServices.Exceptions.WrongParametersforHexagon;
 import com.example.rest.webServices.restfulwebServices.POJOs.NewHexagon;
 
 @RestController
@@ -28,7 +29,10 @@ public class MainController {
 
 	@GetMapping("/showAll")
 	public HashMap<String, Pair<Integer, Integer>> viewMapContents() {
-		return hexagonDao.viewMapContents();
+		if (hexagonDao != null) {
+			return hexagonDao.viewMapContents();
+		}
+		return null;
 	}
 
 	// For Adding a new Hexagon adjacent to an old hexagon
@@ -36,9 +40,17 @@ public class MainController {
 	@ResponseBody
 	public HashMap<String, Pair<Integer, Integer>> addHexagon(@RequestBody NewHexagon newHexagon) {
 
+		if (hexagonDao == null || newHexagon == null) {
+			return null;
+		}
 		String newHexName = newHexagon.getNewHexagon();
 		String neighborName = newHexagon.getNeighborName();
 		int commonBoundary = newHexagon.getBoundary();
+
+		if (hexagonDao.isRequestInValid(newHexName, neighborName, commonBoundary)) {
+			throw new WrongParametersforHexagon("Bad request Type for adding Hexagon");
+		}
+
 		HashMap<String, Pair<Integer, Integer>> result = hexagonDao.addNewHexagon(newHexName, neighborName,
 				commonBoundary);
 		return result;
@@ -48,6 +60,11 @@ public class MainController {
 	// For querying the neighbors of hexagon
 	@GetMapping("/neighbors/{name}")
 	public HashMap<String, Pair<Integer, Integer>> findNeighborsof(@PathVariable String name) {
+
+		if (hexagonDao == null) {
+			return null;
+		}
+
 		HashMap<String, Pair<Integer, Integer>> ans = hexagonDao.queryAllNeighbours(name);
 		return ans;
 
@@ -56,6 +73,11 @@ public class MainController {
 	// For deleting a Hexagon by name
 	@DeleteMapping("/delete/{name}")
 	public Map<String, Boolean> deleteHexagon(@PathVariable String name) {
+
+		if (hexagonDao == null) {
+			return null;
+		}
+
 		Boolean ans = hexagonDao.removeHexagon(name);
 		Map<String, Boolean> mp = new LinkedHashMap<>();
 		mp.put("status", ans);

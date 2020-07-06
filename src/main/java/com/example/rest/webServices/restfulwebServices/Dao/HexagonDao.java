@@ -8,10 +8,12 @@ import java.util.Set;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
+import com.example.rest.webServices.restfulwebServices.Exceptions.NoHexagonFoundException;
+
 @Component
 public class HexagonDao {
 
-	Boolean start = false;
+	Boolean appAlreadystarted = false;
 
 	int[] xmoveForEvenx = { 0, 1, 1, 0, -1, -1 };
 	int[] ymoveForEvenx = { 1, 0, -1, -1, -1, 0 };
@@ -32,13 +34,13 @@ public class HexagonDao {
 				return entry.getKey();
 			}
 		}
-		return "";
+		return null;
 	}
 
 	public HashMap<String, Pair<Integer, Integer>> viewMapContents() {
-		if (start == false) {
+		if (appAlreadystarted == false) {
 			hexagons.put("axa", Pair.of(0, 0));
-			start = true;
+			appAlreadystarted = true;
 		}
 		return hexagons;
 	}
@@ -74,11 +76,18 @@ public class HexagonDao {
 
 			Pair<Integer, Integer> points = hexagons.get(neighbor);
 
+			// Case when neighbor is not found is already handled in frontend
+
+			if (points == null) {
+				throw new NoHexagonFoundException("Wrong Value in NeighBors");
+			}
+
 			int newCenterX = newXcoordinates(points.getFirst(), points.getSecond(), boundary);
 			int newCenterY = newYcoordinates(points.getFirst(), points.getSecond(), boundary);
 
 			String oldHexagonPresent = FindHexagonWithCordinates(newCenterX, newCenterY);
-			if (!oldHexagonPresent.equals("")) {
+
+			if (oldHexagonPresent != null) {
 				hexagons.remove(oldHexagonPresent);
 			}
 
@@ -92,10 +101,10 @@ public class HexagonDao {
 		// to keep track of visited hexagons
 		HashMap<String, Boolean> vis = new HashMap<String, Boolean>();
 		vis.put(name, true);
-		LinkedList<String> q = new LinkedList<>();
-		q.add(name);
-		while (q.size() != 0) {
-			name = q.poll();
+		LinkedList<String> queue = new LinkedList<>();
+		queue.add(name);
+		while (queue.size() != 0) {
+			name = queue.poll();
 
 			Set<String> neighbors = queryAllNeighbours(name).keySet();
 
@@ -105,7 +114,7 @@ public class HexagonDao {
 				String nextHex = itr.next();
 				if (vis.get(nextHex) == null) {
 					vis.put(nextHex, true);
-					q.add(nextHex);
+					queue.add(nextHex);
 					cnt++;
 				}
 			}
@@ -131,7 +140,7 @@ public class HexagonDao {
 
 			String newName = FindHexagonWithCordinates(newCordinateX, newCordinateY);
 
-			if (!newName.equals("")) {
+			if (newName != null) {
 
 				if (!bfs(newName, newCordinateX, newCordinateY)) {
 					// Removal Not Possible
@@ -152,6 +161,10 @@ public class HexagonDao {
 		HashMap<String, Pair<Integer, Integer>> ans = new HashMap<>();
 		ans.put(name, hexagons.get(name));
 
+		if (hexagons.get(name) == null) {
+			throw new NoHexagonFoundException("No Hexagon Found for " + name);
+		}
+
 		Pair<Integer, Integer> cordinates = hexagons.get(name);
 		int cordinatesX = cordinates.getFirst();
 		int cordinatesY = cordinates.getSecond();
@@ -161,14 +174,23 @@ public class HexagonDao {
 			int newCordinateY = newYcoordinates(cordinatesX, cordinatesY, i);
 
 			String nameOfHexagon = FindHexagonWithCordinates(newCordinateX, newCordinateY);
-			if (!nameOfHexagon.equals("")) {
+			if (nameOfHexagon != null) {
 				ans.put(nameOfHexagon, hexagons.get(nameOfHexagon));
 			}
 		}
 		return ans;
 	}
 
+	public Boolean isRequestInValid(String newHexName, String neighborName, int commonBoundary) {
+		return (newHexName == null || neighborName == null || commonBoundary > 5 || commonBoundary < 0);
+
+	}
+
 	public Boolean removeHexagon(String name) {
+
+		if (!hexagons.containsKey(name)) {
+			throw new NoHexagonFoundException("No Hexagon to delete");
+		}
 
 		if (removalIsPossible(name)) {
 			return true;
