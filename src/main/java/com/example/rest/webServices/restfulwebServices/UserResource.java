@@ -22,9 +22,12 @@ public class UserResource {
 	public String retrieve() {
 		return "Abhishek";
 	}
-
-	@GetMapping("/showAll")
+@GetMapping("/showAll")
 	public HashMap<String, Pair<Integer, Integer>> viewMapContents() {
+		if(!start) {
+			hexagons.put("axa", Pair.of(0, 0));
+			start = true;
+		}
 		return hexagons;
 	}
 
@@ -55,6 +58,7 @@ public class UserResource {
 
 	}
 
+        boolean start = false;
 	static int[] xmove = { 0, 1, 1, 0, -1, -1 };
 	static int[] ymove = { 1, 0, -1, -1, -1, 0 };
 
