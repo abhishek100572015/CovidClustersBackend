@@ -31,12 +31,15 @@ public class UserResource {
 		return hexagons;
 	}
 
-	// For deleting a Hexagon
+	// For deleting a Hexagon by name
 	@DeleteMapping("/delete/{name}")
-	public boolean retrieveAllUsers(@PathVariable String name) {
-		return removeHexagon(name);
-	}
+	public Map<String, Boolean> deleteHexagon(@PathVariable String name) {
+		Boolean ans = HexagonDao.removeHexagon(name);
+		Map<String, Boolean> mp = new LinkedHashMap<>();
+		mp.put("status", ans);
+		return mp;
 
+	}
 	// For querying
 	@GetMapping("/neighbors/{name}")
 	public HashMap<String, Pair<Integer, Integer>> retrieveUser(@PathVariable String name) {
