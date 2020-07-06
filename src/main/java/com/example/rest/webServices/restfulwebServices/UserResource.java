@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javafx.util.Pair;
 
 @RestController
 public class UserResource {
@@ -55,8 +54,8 @@ public class UserResource {
 
 		for (HashMap.Entry<String, Pair<Integer, Integer>> entry : hexagons.entrySet()) {
 			Pair<Integer, Integer> cordinates = entry.getValue();
-			int xcoOrdinate = cordinates.getKey();
-			int ycoOrdinate = cordinates.getValue();
+			int xcoOrdinate = cordinates.getFirst();
+			int ycoOrdinate = cordinates.getSecond();
 			if (xcoOrdinate == newCordinateX && ycoOrdinate == newCordinateY) {
 				return entry.getKey();
 			}
@@ -68,8 +67,8 @@ public class UserResource {
 
 		ArrayList<Pair<String, Integer>> ans = new ArrayList<>();
 		Pair<Integer, Integer> cordinates = hexagons.get(name);
-		int cordinatesX = cordinates.getKey();
-		int cordinatesY = cordinates.getValue();
+		int cordinatesX = cordinates.getFirst();
+		int cordinatesY = cordinates.getSecond();
 
 		int newCordinateX, newCordinateY;
 		for (int i = 0; i < 6; i++) {
@@ -82,7 +81,7 @@ public class UserResource {
 			}
 			String nameOfHexagon = existsHexagonWithCenter(newCordinateX, newCordinateY);
 			if (!nameOfHexagon.equals("")) {
-				ans.add(new Pair<>(nameOfHexagon, i));
+				ans.add(Pair.of(nameOfHexagon, i));
 			}
 		}
 		return ans;
@@ -91,19 +90,19 @@ public class UserResource {
 	private static ArrayList<Pair<String, Integer>> addNewHexagon(String name, String neighbor, int boundary) {
 
 		if (hexagons.size() == 0) {
-			hexagons.put(name, new Pair<Integer, Integer>(0, 0));
+			hexagons.put(name, Pair.of(0, 0));
 			return new ArrayList<Pair<String, Integer>>();
 		} else {
 			Pair<Integer, Integer> points = hexagons.get(neighbor);
 			int newCenterX, newCenterY;
-			if (points.getKey() % 2 == 1) {
-				newCenterX = points.getKey() + xmove1[boundary];
-				newCenterY = points.getValue() + ymove1[boundary];
+			if (points.getFirst() % 2 == 1) {
+				newCenterX = points.getFirst() + xmove1[boundary];
+				newCenterY = points.getSecond() + ymove1[boundary];
 			} else {
-				newCenterX = points.getKey() + xmove[boundary];
-				newCenterY = points.getValue() + ymove[boundary];
+				newCenterX = points.getFirst() + xmove[boundary];
+				newCenterY = points.getSecond() + ymove[boundary];
 			}
-			hexagons.put(name, new Pair<Integer, Integer>(newCenterX, newCenterY));
+			hexagons.put(name, Pair.of(newCenterX, newCenterY));
 		}
 		return queryAllNeighboursWithBoundary(name);
 	}
@@ -135,8 +134,8 @@ public class UserResource {
 		Pair<Integer, Integer> pr;
 		pr = hexagons.get(name);
 		hexagons.remove(name);
-		int xCordinate = pr.getKey();
-		int yCordinate = pr.getValue();
+		int xCordinate = pr.getFirst();
+		int yCordinate = pr.getSecond();
 
 		int newCordinateX, newCordinateY;
 		for (int i = 0; i < 6; i++) {
@@ -167,8 +166,8 @@ public class UserResource {
 
 		ArrayList<String> ans = new ArrayList<>();
 		Pair<Integer, Integer> cordinates = hexagons.get(name);
-		int cordinatesX = cordinates.getKey();
-		int cordinatesY = cordinates.getValue();
+		int cordinatesX = cordinates.getFirst();
+		int cordinatesY = cordinates.getSecond();
 
 		int newCordinateX, newCordinateY;
 		for (int i = 0; i < 6; i++) {

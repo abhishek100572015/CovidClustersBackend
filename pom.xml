@@ -24,11 +24,8 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-    <groupId>org.wildfly.swarm</groupId>
-    <artifactId>javafx</artifactId>
-    <version>2016.10.0</version>
-		</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-base -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
