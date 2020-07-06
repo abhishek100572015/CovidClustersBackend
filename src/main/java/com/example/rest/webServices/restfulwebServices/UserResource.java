@@ -2,12 +2,13 @@ package com.example.rest.webServices.restfulwebServices;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,6 +17,11 @@ public class UserResource {
 	@GetMapping("/del")
 	public String retrieve() {
 		return "Abhishek";
+	}
+
+	@GetMapping("/showAll")
+	public HashMap<String, Pair<Integer, Integer>> viewMapContents() {
+		return hexagons;
 	}
 
 	// For deleting a Hexagon
@@ -27,17 +33,21 @@ public class UserResource {
 
 	// For querying
 	@GetMapping("/neighbors/{name}")
-	public ArrayList<String> retrieveUser(@PathVariable String name) {
-		ArrayList<String> ans = queryAllNeighbours(name);
+	public HashMap<String, Pair<Integer, Integer>> retrieveUser(@PathVariable String name) {
+		HashMap<String, Pair<Integer, Integer>> ans = queryAllNeighbours(name);
 		return ans;
 
 	}
 
 	// For Adding a new Hexagon
-	@PostMapping("/AddHexagon/{newHexagon}/{neighbor}/{boundary}")
-	public ArrayList<Pair<String, Integer>> createUser(@PathVariable String newHexagon, @PathVariable String neighbor,
-			@PathVariable int boundary) {
-		ArrayList<Pair<String, Integer>> result = addNewHexagon(newHexagon, neighbor, boundary);
+	@PostMapping("/AddHexagon")
+	@ResponseBody
+	public HashMap<String, Pair<Integer, Integer>> createUser(@RequestBody LoginForm login) {
+
+		String newHexagon = login.getNewHexagon();
+		String neighbor = login.getName();
+		int boundary = login.getBoundary();
+		HashMap<String, Pair<Integer, Integer>> result = addNewHexagon(newHexagon, neighbor, boundary);
 		return result;
 
 	}
@@ -87,11 +97,14 @@ public class UserResource {
 		return ans;
 	}
 
-	private static ArrayList<Pair<String, Integer>> addNewHexagon(String name, String neighbor, int boundary) {
+	private static HashMap<String, Pair<Integer, Integer>> addNewHexagon(String name, String neighbor, int boundary) {
 
 		if (hexagons.size() == 0) {
+			HashMap<String, Pair<Integer, Integer>> ans = new HashMap<>();
 			hexagons.put(name, Pair.of(0, 0));
-			return new ArrayList<Pair<String, Integer>>();
+			ans.put(name, hexagons.get(name));
+			return ans;
+
 		} else {
 			Pair<Integer, Integer> points = hexagons.get(neighbor);
 			int newCenterX, newCenterY;
@@ -104,29 +117,30 @@ public class UserResource {
 			}
 			hexagons.put(name, Pair.of(newCenterX, newCenterY));
 		}
-		return queryAllNeighboursWithBoundary(name);
+		return queryAllNeighbours(name);
 	}
 
 	private static Boolean bfs(String name, int xCordinate, int yCordinate) {
-		int cnt = 0;
-		HashMap<String, Boolean> vis = new HashMap<String, Boolean>();
-		vis.put(name, true);
-		LinkedList<String> q = new LinkedList<>();
-		q.add(name);
-		while (q.size() != 0) {
-			name = q.poll();
-
-			ArrayList<String> neighbors = queryAllNeighbours(name);
-			for (int i = 0; i < neighbors.size(); i++) {
-				if (!vis.get(neighbors.get(i))) {
-					vis.put(neighbors.get(i), true);
-					q.add(name);
-					cnt++;
-				}
-			}
-
-		}
-		return (cnt == hexagons.size());
+//		int cnt = 0;
+//		HashMap<String, Boolean> vis = new HashMap<String, Boolean>();
+//		vis.put(name, true);
+//		LinkedList<String> q = new LinkedList<>();
+//		q.add(name);
+//		while (q.size() != 0) {
+//			name = q.poll();
+//
+//			ArrayList<String> neighbors = queryAllNeighbours(name);
+//			for (int i = 0; i < neighbors.size(); i++) {
+//				if (!vis.get(neighbors.get(i))) {
+//					vis.put(neighbors.get(i), true);
+//					q.add(name);
+//					cnt++;
+//				}
+//			}
+//
+//		}
+//		return (cnt == hexagons.size());
+		return true;
 
 	}
 
@@ -162,9 +176,10 @@ public class UserResource {
 		return true;
 	}
 
-	private static ArrayList<String> queryAllNeighbours(String name) {
+	private static HashMap<String, Pair<Integer, Integer>> queryAllNeighbours(String name) {
 
-		ArrayList<String> ans = new ArrayList<>();
+		HashMap<String, Pair<Integer, Integer>> ans = new HashMap<>();
+		ans.put(name, hexagons.get(name));
 		Pair<Integer, Integer> cordinates = hexagons.get(name);
 		int cordinatesX = cordinates.getFirst();
 		int cordinatesY = cordinates.getSecond();
@@ -180,7 +195,7 @@ public class UserResource {
 			}
 			String nameOfHexagon = existsHexagonWithCenter(newCordinateX, newCordinateY);
 			if (!nameOfHexagon.equals("")) {
-				ans.add(nameOfHexagon);
+				ans.put(nameOfHexagon, hexagons.get(nameOfHexagon));
 			}
 		}
 		return ans;
