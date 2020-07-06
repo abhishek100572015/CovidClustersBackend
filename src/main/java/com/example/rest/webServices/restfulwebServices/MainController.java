@@ -19,6 +19,8 @@ import POJOs.NewHexagon;
 @RestController
 public class MainController {
 
+	HexagonDao hexagonDao = new HexagonDao();
+
 	@GetMapping("/test")
 	public String test() {
 		return "Abhishek";
@@ -26,7 +28,7 @@ public class MainController {
 
 	@GetMapping("/showAll")
 	public HashMap<String, Pair<Integer, Integer>> viewMapContents() {
-		return HexagonDao.viewMapContents();
+		return hexagonDao.viewMapContents();
 	}
 
 	// For Adding a new Hexagon adjacent to an old hexagon
@@ -37,7 +39,7 @@ public class MainController {
 		String newHexName = newHexagon.getNewHexagon();
 		String neighborName = newHexagon.getNeighborName();
 		int commonBoundary = newHexagon.getBoundary();
-		HashMap<String, Pair<Integer, Integer>> result = HexagonDao.addNewHexagon(newHexName, neighborName,
+		HashMap<String, Pair<Integer, Integer>> result = hexagonDao.addNewHexagon(newHexName, neighborName,
 				commonBoundary);
 		return result;
 
@@ -46,7 +48,7 @@ public class MainController {
 	// For querying the neighbors of hexagon
 	@GetMapping("/neighbors/{name}")
 	public HashMap<String, Pair<Integer, Integer>> findNeighborsof(@PathVariable String name) {
-		HashMap<String, Pair<Integer, Integer>> ans = HexagonDao.queryAllNeighbours(name);
+		HashMap<String, Pair<Integer, Integer>> ans = hexagonDao.queryAllNeighbours(name);
 		return ans;
 
 	}
@@ -54,7 +56,7 @@ public class MainController {
 	// For deleting a Hexagon by name
 	@DeleteMapping("/delete/{name}")
 	public Map<String, Boolean> deleteHexagon(@PathVariable String name) {
-		Boolean ans = HexagonDao.removeHexagon(name);
+		Boolean ans = hexagonDao.removeHexagon(name);
 		Map<String, Boolean> mp = new LinkedHashMap<>();
 		mp.put("status", ans);
 		return mp;

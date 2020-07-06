@@ -1,32 +1,27 @@
 package Dao;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.data.util.Pair;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.stereotype.Component;
 
-import Exceptions.NoHexagonFoundException;
-
+@Component
 public class HexagonDao {
 
-	static Boolean start = false;
+	Boolean start = false;
 
-	static int[] xmoveForEvenx = { 0, 1, 1, 0, -1, -1 };
-	static int[] ymoveForEvenx = { 1, 0, -1, -1, -1, 0 };
+	int[] xmoveForEvenx = { 0, 1, 1, 0, -1, -1 };
+	int[] ymoveForEvenx = { 1, 0, -1, -1, -1, 0 };
 
-	static int[] xmoveForOddx = { 0, 1, 1, 0, -1, -1 };
-	static int[] ymoveForOddx = { 1, 1, 0, -1, 0, 1 };
+	int[] xmoveForOddx = { 0, 1, 1, 0, -1, -1 };
+	int[] ymoveForOddx = { 1, 1, 0, -1, 0, 1 };
 
-	static HashMap<String, Pair<Integer, Integer>> hexagons = new HashMap<String, Pair<Integer, Integer>>();
+	HashMap<String, Pair<Integer, Integer>> hexagons = new HashMap<String, Pair<Integer, Integer>>();
 
-	private static String FindHexagonWithCordinates(int newCordinateX, int newCordinateY) {
+	private String FindHexagonWithCordinates(int newCordinateX, int newCordinateY) {
 
 		for (HashMap.Entry<String, Pair<Integer, Integer>> entry : hexagons.entrySet()) {
 
@@ -40,7 +35,7 @@ public class HexagonDao {
 		return "";
 	}
 
-	public static HashMap<String, Pair<Integer, Integer>> viewMapContents() {
+	public HashMap<String, Pair<Integer, Integer>> viewMapContents() {
 		if (start == false) {
 			hexagons.put("axa", Pair.of(0, 0));
 			start = true;
@@ -48,7 +43,7 @@ public class HexagonDao {
 		return hexagons;
 	}
 
-	private static int newXcoordinates(int x, int y, int edge) {
+	private int newXcoordinates(int x, int y, int edge) {
 		if (x % 2 == 1) {
 			return (x + xmoveForOddx[edge]);
 		} else {
@@ -57,7 +52,7 @@ public class HexagonDao {
 
 	}
 
-	private static int newYcoordinates(int x, int y, int edge) {
+	private int newYcoordinates(int x, int y, int edge) {
 		if (x % 2 == 1) {
 			return (y + ymoveForOddx[edge]);
 		} else {
@@ -66,7 +61,7 @@ public class HexagonDao {
 
 	}
 
-	public static HashMap<String, Pair<Integer, Integer>> addNewHexagon(String name, String neighbor, int boundary) {
+	public HashMap<String, Pair<Integer, Integer>> addNewHexagon(String name, String neighbor, int boundary) {
 
 		if (hexagons.size() == 0) {
 			// Insert the first hexagon at origin
@@ -82,12 +77,17 @@ public class HexagonDao {
 			int newCenterX = newXcoordinates(points.getFirst(), points.getSecond(), boundary);
 			int newCenterY = newYcoordinates(points.getFirst(), points.getSecond(), boundary);
 
+			String oldHexagonPresent = FindHexagonWithCordinates(newCenterX, newCenterY);
+			if (!oldHexagonPresent.equals("")) {
+				hexagons.remove(oldHexagonPresent);
+			}
+
 			hexagons.put(name, Pair.of(newCenterX, newCenterY));
 		}
 		return queryAllNeighbours(name);
 	}
 
-	private static Boolean bfs(String name, int xCordinate, int yCordinate) {
+	private Boolean bfs(String name, int xCordinate, int yCordinate) {
 		int cnt = 1;
 		// to keep track of visited hexagons
 		HashMap<String, Boolean> vis = new HashMap<String, Boolean>();
@@ -117,7 +117,7 @@ public class HexagonDao {
 
 	}
 
-	private static boolean removalIsPossible(String name) {
+	private boolean removalIsPossible(String name) {
 
 		Pair<Integer, Integer> cordinates;
 		cordinates = hexagons.get(name);
@@ -146,7 +146,7 @@ public class HexagonDao {
 		return true;
 	}
 
-	public static HashMap<String, Pair<Integer, Integer>> queryAllNeighbours(String name) {
+	public HashMap<String, Pair<Integer, Integer>> queryAllNeighbours(String name) {
 
 		// adding the original hexagon
 		HashMap<String, Pair<Integer, Integer>> ans = new HashMap<>();
@@ -168,7 +168,7 @@ public class HexagonDao {
 		return ans;
 	}
 
-	public static Boolean removeHexagon(String name) {
+	public Boolean removeHexagon(String name) {
 
 		if (removalIsPossible(name)) {
 			return true;
@@ -177,14 +177,9 @@ public class HexagonDao {
 
 	}
 
-	@ExceptionHandler(NoHexagonFoundException.class)
-	public void handleException(NoHexagonFoundException e, HttpServletResponse response) {
-		try {
-			response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	public void deleteAll() {
+		hexagons.clear();
+
 	}
 
 }
