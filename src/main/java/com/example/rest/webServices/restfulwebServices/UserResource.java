@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.springframework.data.util.Pair;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ public class UserResource {
 	}
 
 	// For deleting a Hexagon
-	@GetMapping("/delete/{name}")
+	@DeleteMapping("/delete/{name}")
 	public boolean retrieveAllUsers(@PathVariable String name) {
 		return removeHexagon(name);
 	}
@@ -167,8 +168,9 @@ public class UserResource {
 				newCordinateY = yCordinate + ymove[i];
 			}
 
-			if (!existsHexagonWithCenter(newCordinateX, newCordinateY).equals("")) {
-				if (true) {
+			String newName = existsHexagonWithCenter(newCordinateX, newCordinateY);
+			if (!newName.equals("")) {
+				if (!bfs(newName, newCordinateX, newCordinateY)) {
 					hexagons.put(name, pr);
 					System.out.println("Removal Not Possible");
 					return false;
