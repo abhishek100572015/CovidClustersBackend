@@ -79,10 +79,6 @@ public class HexagonDao {
 
 			Pair<Integer, Integer> points = hexagons.get(neighbor);
 
-			if (hexagons.containsKey(neighbor)) {
-				throw new NoHexagonFoundException(neighbor);
-			}
-
 			int newCenterX = newXcoordinates(points.getFirst(), points.getSecond(), boundary);
 			int newCenterY = newYcoordinates(points.getFirst(), points.getSecond(), boundary);
 
