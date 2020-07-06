@@ -1,4 +1,4 @@
-package Exceptions;
+package com.example.rest.webServices.restfulwebServices.Exceptions;
 
 public class NoHexagonFoundException extends RuntimeException {
 

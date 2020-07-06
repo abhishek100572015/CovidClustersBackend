@@ -1,4 +1,4 @@
-package POJOs;
+package com.example.rest.webServices.restfulwebServices.POJOs;
 
 import java.util.Date;
 

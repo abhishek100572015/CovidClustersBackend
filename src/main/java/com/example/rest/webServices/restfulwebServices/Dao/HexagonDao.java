@@ -1,4 +1,4 @@
-package Dao;
+package com.example.rest.webServices.restfulwebServices.Dao;
 
 import java.util.HashMap;
 import java.util.Iterator;

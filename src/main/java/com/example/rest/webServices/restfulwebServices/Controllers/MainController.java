@@ -1,4 +1,4 @@
-package com.example.rest.webServices.restfulwebServices;
+package com.example.rest.webServices.restfulwebServices.Controllers;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import Dao.HexagonDao;
-import POJOs.NewHexagon;
+import com.example.rest.webServices.restfulwebServices.Dao.HexagonDao;
+import com.example.rest.webServices.restfulwebServices.POJOs.NewHexagon;
 
 @RestController
 public class MainController {
