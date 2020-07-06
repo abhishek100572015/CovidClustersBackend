@@ -2,6 +2,9 @@ package com.example.rest.webServices.restfulwebServices;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
 
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +30,7 @@ public class UserResource {
 	// For deleting a Hexagon
 	@GetMapping("/delete/{name}")
 	public boolean retrieveAllUsers(@PathVariable String name) {
-//		removeHexagon(name);
-		return true;
+		return removeHexagon(name);
 	}
 
 	// For querying
@@ -121,26 +123,29 @@ public class UserResource {
 	}
 
 	private static Boolean bfs(String name, int xCordinate, int yCordinate) {
-//		int cnt = 0;
-//		HashMap<String, Boolean> vis = new HashMap<String, Boolean>();
-//		vis.put(name, true);
-//		LinkedList<String> q = new LinkedList<>();
-//		q.add(name);
-//		while (q.size() != 0) {
-//			name = q.poll();
-//
-//			ArrayList<String> neighbors = queryAllNeighbours(name);
-//			for (int i = 0; i < neighbors.size(); i++) {
-//				if (!vis.get(neighbors.get(i))) {
-//					vis.put(neighbors.get(i), true);
-//					q.add(name);
-//					cnt++;
-//				}
-//			}
-//
-//		}
-//		return (cnt == hexagons.size());
-		return true;
+		int cnt = 1;
+		HashMap<String, Boolean> vis = new HashMap<String, Boolean>();
+		vis.put(name, true);
+		LinkedList<String> q = new LinkedList<>();
+		q.add(name);
+		while (q.size() != 0) {
+			name = q.poll();
+
+			Set<String> neighbors = queryAllNeighbours(name).keySet();
+
+			Iterator<String> itr = neighbors.iterator(); // traversing over HashSet
+
+			while (itr.hasNext()) {
+				String nextHex = itr.next();
+				if (vis.get(nextHex) == null) {
+					vis.put(nextHex, true);
+					q.add(nextHex);
+					cnt++;
+				}
+			}
+
+		}
+		return (cnt == hexagons.size());
 
 	}
 
@@ -201,10 +206,12 @@ public class UserResource {
 		return ans;
 	}
 
-	private static void removeHexagon(String name) {
+	private static Boolean removeHexagon(String name) {
 		if (removalIsPossible(name)) {
-			System.out.println("Removed");
+			return true;
 		}
+		return false;
+
 	}
 
 }
