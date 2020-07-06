@@ -1,13 +1,22 @@
 package Dao;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.data.util.Pair;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import Exceptions.NoHexagonFoundException;
 
 public class HexagonDao {
+
+	static Boolean start = false;
 
 	static int[] xmoveForEvenx = { 0, 1, 1, 0, -1, -1 };
 	static int[] ymoveForEvenx = { 1, 0, -1, -1, -1, 0 };
@@ -32,6 +41,10 @@ public class HexagonDao {
 	}
 
 	public static HashMap<String, Pair<Integer, Integer>> viewMapContents() {
+		if (start == false) {
+			hexagons.put("axa", Pair.of(0, 0));
+			start = true;
+		}
 		return hexagons;
 	}
 
@@ -65,6 +78,10 @@ public class HexagonDao {
 		} else {
 
 			Pair<Integer, Integer> points = hexagons.get(neighbor);
+
+			if (hexagons.containsKey(neighbor)) {
+				throw new NoHexagonFoundException(neighbor);
+			}
 
 			int newCenterX = newXcoordinates(points.getFirst(), points.getSecond(), boundary);
 			int newCenterY = newYcoordinates(points.getFirst(), points.getSecond(), boundary);
@@ -162,6 +179,16 @@ public class HexagonDao {
 		}
 		return false;
 
+	}
+
+	@ExceptionHandler(NoHexagonFoundException.class)
+	public void handleException(NoHexagonFoundException e, HttpServletResponse response) {
+		try {
+			response.sendError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 }
