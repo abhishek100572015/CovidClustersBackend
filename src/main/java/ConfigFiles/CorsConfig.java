@@ -1,4 +1,4 @@
-package com.example.rest.webServices.restfulwebServices;
+package ConfigFiles;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

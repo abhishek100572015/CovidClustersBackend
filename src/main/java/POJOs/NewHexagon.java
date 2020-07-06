@@ -1,24 +1,24 @@
-package com.example.rest.webServices.restfulwebServices;
+package POJOs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class LoginForm {
+public class NewHexagon {
 
 	@JsonProperty("newHexagon")
 	public String newHexagon;
 
 	@JsonProperty("neighbor")
-	public String name;
+	public String neighborName;
+
+	public void setNeighborName(String neighborName) {
+		this.neighborName = neighborName;
+	}
 
 	@JsonProperty("sharedEdgeNeighbor")
 	public int boundary;
 
 	public void setNewHexagon(String newHexagon) {
 		this.newHexagon = newHexagon;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public void setBoundary(int boundary) {
@@ -29,16 +29,12 @@ public class LoginForm {
 		return newHexagon;
 	}
 
-	public String getName() {
-		return name;
+	public String getNeighborName() {
+		return neighborName;
 	}
 
 	public int getBoundary() {
 		return boundary;
-	}
-
-	public LoginForm() {
-		// TODO Auto-generated constructor stub
 	}
 
 }
